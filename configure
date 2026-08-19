@@ -1,0 +1,70 @@
+#!/bin/bash
+#=========================================================================
+# This file is a part of the sample SwiftQt app.
+# (C) 2023, 2024, 2026 Zack T Smith.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+#
+# The author may be reached at 3 at zs3 dot me.
+#=========================================================================
+
+#-------------
+# Look for Qt6 
+#
+QT_INC=/usr/include/x86_64-linux-gnu/qt6
+QT_LIB=/usr/lib/x86_64-linux-gnu/qt6
+
+if ! [ -d $QT_INC ] && [ -d $QT_LIB ]; then
+	echo Found Qt6
+else
+	PACKAGES="qt6-base-dev qmake6 qt6-webengine-dev libqt6pdfwidgets6 libqt6widgets6 \
+		libqt6pdfwidgets6 libqt6multimediawidgets6 qt6-multimedia-dev qt6-pdf-dev \
+		qt6-positioning-dev libqt6network6 libqt6gui6 qt6-image-formats-plugins qmake6"
+
+	if [[ `uname -s` == "Linux" ]]; then
+		sudo apt install $PACKAGES
+	elif [[ `uname -o` == "Darwin" ]]; then
+		brew install $PACKAGES
+	fi
+fi
+
+#----------------
+# Look for swiftc
+#
+if ( which swiftc > /dev/null ); then
+	version=$(swiftc -v 2>&1 | head -1 | cut -d ' ' -f 3)
+	if [[ "$version" != "" ]]; then
+		echo "Detected Swift compiler $version."
+	else 
+		echo "Detected Swift compiler."
+	fi
+else
+	echo "Missing Swift compiler."
+fi
+
+#-------------
+# Look for C++
+#
+if ( which clang++ > /dev/null ); then
+	version=$(clang --version 2>&1 | head -1 | cut -d ' ' -f 3)
+	echo "Detected Clang $version."
+elif ( which g++ > /dev/null ); then
+	version=$(g++ --version 2>&1 | head -1 | cut -d ' ' -f 3)
+	echo "Detected G++ $version."
+elif ( which c++ > /dev/null ); then
+	echo "Detected C++."
+else
+	echo "Missing C++ compiler."
+fi
