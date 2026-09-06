@@ -12,7 +12,7 @@ various Qt widgets that are available with SwiftQt.
 This app depends on:
 
 * The Qt 6 libraries and utilities.
-* The `swiftc` compiler with Swift Package Manager.
+* The Swift 6 compiler with Swift Package Manager.
 * A C++ compiler such as `clang++` or `g++`.
 
 Run the `configure` script to verify these are installed.
@@ -23,7 +23,7 @@ Run the `configure` script to verify these are installed.
 * To run the compiled app, type `swift run`.
 * To clean, type `swift package clean`.
 
-# Changes
+## Changes
 
 This code originally accompanied the SwiftQt library code
 but is now separate, so I am renumbering the releases:
@@ -32,7 +32,7 @@ but is now separate, so I am renumbering the releases:
 * 0.2 Added various automatic layouts.
 * 0.3 Separated demo app from SwiftQt library.
 
-# Media
+## Media
 
 The included TIFF image for the demo is from here:
 https://www.jpl.nasa.gov/images/pia25970-perseverance-rover-watches-ingenuity-mars-helicopters-54th-flight/

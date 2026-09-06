@@ -43,15 +43,19 @@ class ManualLayoutWindow : QMainWindow {
 		super.init (x: x, y: y, width: width, height: height)
 		constructUI()
 
+		self.windowResizedHandler = { [weak self] (event : SQEvent) -> Void in 
+			print ("windowResizedHandler"); fflush(nil)
+			self?.layoutUI ()
+		}
 		self.windowClosedHandler = { [weak self] in
-			print ("windowClosedHandler"); fflush(nil);
+			print ("windowClosedHandler"); fflush(nil)
 			self?.tearDownUI()
 		}
 	}
 
 	private func tearDownUI () 
 	{
-		print ("tearDownUI"); fflush(nil);
+		print ("tearDownUI"); fflush(nil)
 		setMenuBar (nil)
 		webEngineView?.setHTML ("")
 	}
@@ -70,12 +74,12 @@ class ManualLayoutWindow : QMainWindow {
 			let button2 = button2, 
 			let button3 = button3, 
 			let textField = textField, 
-			let editor = editor, 
 			let webEngineView = webEngineView,
 			let table = table,
 			let statusBar = statusBar,
 			let imageView = imageView
 		else {
+			print ("Missing UI element")
 			return
 		}
 
@@ -103,8 +107,10 @@ class ManualLayoutWindow : QMainWindow {
 		textField.setFrame (QRect.new(x, y, 200, 50))
 		y += 50 + spacing
 
-		let editorHeight = totalHeight - y - spacing - statusBarHeight
-		editor.setFrame (QRect.new(x, y, 200, editorHeight))
+		if let editor = editor {
+			let editorHeight = totalHeight - y - spacing - statusBarHeight
+			editor.setFrame (QRect.new(x, y, 200, editorHeight))
+		}
 
 		let verticalViewWidth = (availableWidth - 240 - spacing)/3
 
@@ -124,43 +130,39 @@ class ManualLayoutWindow : QMainWindow {
 	{
 		// Set up menu
 		let fileMenu : QMenu = QMenu("&File")
-		let action0 = fileMenu.addAction ("&Open")
-		action0!.triggeredHandler = {
+		let action0 = fileMenu.addAction ("&Open", {
 			print ("FILE->OPEN")
-		}
-		let action1 = fileMenu.addAction ("C&lose")
-		action1!.setShortcut (QKeySequence.Close())
-		action1!.triggeredHandler = { [weak self] in
+		})
+		action0!.setShortcut (QKeySequence.Open())
+
+		let action1 = fileMenu.addAction ("C&lose", { [weak self] in
 			guard let self = self else {
 				return
 			}
 			print ("FILE->CLOSE")
 			self.close()
-		}
-		let action2 = fileMenu.addAction ("Exit")
-		action2!.setShortcut (QKeySequence.Quit())
-		action2!.triggeredHandler = {
+		})
+		action1!.setShortcut (QKeySequence.Close())
+
+		let action2 = fileMenu.addAction ("Exit", {
 			print ("FILE->EXIT")
 			QApplication.quit()
-		}
+		})
+		action2!.setShortcut (QKeySequence.Quit())
 
 		let editMenu : QMenu = QMenu("&Edit")
-		let action3 = editMenu.addAction ("Copy")
-		action3!.triggeredHandler = {
+		_ = editMenu.addAction ("Copy", {
 			print ("EDIT->COPY")
-		}
-		let action4 = editMenu.addAction ("Cut")
-		action4!.triggeredHandler = {
+		})
+		_ = editMenu.addAction ("Cut", {
 			print ("EDIT->CUT")
-		}
-		let action5 = editMenu.addAction ("Paste")
-		action5!.triggeredHandler = {
+		})
+		_ = editMenu.addAction ("Paste", {
 			print ("EDIT->PASTE")
-		}
+		})
 
 		let viewMenu : QMenu = QMenu("&View")
-		let action6 = viewMenu.addAction ("Toggle status bar")
-		action6!.triggeredHandler = { [weak self] in
+		_ = viewMenu.addAction ("Toggle status bar", { [weak self] in
 			guard let self = self else {
 				return
 			}
@@ -168,14 +170,13 @@ class ManualLayoutWindow : QMainWindow {
 			if let bar = self.statusBar {
 				bar.setHidden(!bar.isHidden())
 			}
-		}
+		})
 
 		let helpMenu : QMenu = QMenu("&Help")
-		let action7 = helpMenu.addAction ("&About")
-		action7!.triggeredHandler = {
+		_ = helpMenu.addAction ("About", {
 			print ("HELP->ABOUT")
 			SwiftQt.infoPopup ("This is ManualLayoutWindow.")
-		}
+		})
 
 		menuBar = QMenuBar ()
 		menuBar!.addMenu (fileMenu)
@@ -216,7 +217,7 @@ class ManualLayoutWindow : QMainWindow {
 		}
 
 		label1 = QLabel (self, "QLabel")
-		label1!.setStyleSheet ("background-color : cyan; color : #008;");
+		label1!.setStyleSheet ("background-color : cyan; color : #008;")
 		label1!.setWordWrap (true)
 		label1!.setAlignment (Qt.AlignCenter + Qt.AlignVCenter)
 
@@ -230,7 +231,7 @@ class ManualLayoutWindow : QMainWindow {
 			self.setWindowTitle ("This is a test")
 			SwiftQt.infoPopup ("Hello World")
 		}
-		button1!.setStyleSheet ("background-color : white; color : #080;");
+		button1!.setStyleSheet ("background-color : white; color : #080;")
 
 		button2 = QPushButton (self, "Flat QPushButton")
 		button2!.setFlat (true)
@@ -248,7 +249,7 @@ class ManualLayoutWindow : QMainWindow {
 			}
 		}
 
-		button3 = QPushButton (self, "Default QPushButton")
+		button3 = QPushButton (self, "Remove QTextEdit")
 		button3!.setDefault (true)
 		button3!.clickedHandler = { [weak self] in
 			guard let self = self else {
@@ -256,7 +257,11 @@ class ManualLayoutWindow : QMainWindow {
 			}
 			let string = self.button3!.text()
 			print ("Button \"\(string)\" clicked.")
-			self.label1?.clear()
+
+			// Note, no layout is used so no need to removeWidget.
+			self.editor?.setParent(nil)
+			self.editor = nil
+
 			QApplication.beep()
 		}
 
@@ -285,13 +290,13 @@ QTextEdit\nSed ut perspiciatis, unde omnis iste natus error sit voluptatem accus
 
 		setTitle("Sample App using SwiftQt \(SwiftQt.release)")
 
-		self.windowResizedHandler = { [weak self] in
+		self.windowResizedHandler = { [weak self] (event : SQEvent) -> Void in
 			guard let self = self else {
 				return
 			}
 			let newWidth = self.width()
 			let newHeight = self.height()
-			print ("ManualLayoutWindow windowResizedHandler called, new size is \(newWidth)x\(newHeight).");
+			print ("ManualLayoutWindow windowResizedHandler called, new size is \(newWidth)x\(newHeight).")
 		}
 
 		statusBar = QStatusBar (self, "This is the status bar.")
@@ -308,8 +313,8 @@ QTextEdit\nSed ut perspiciatis, unde omnis iste natus error sit voluptatem accus
 
 		if eventType == QEventShow {
 			let className = String(describing: type(of:self))
-			print ("\(className) received Show event.");
-			layoutUI ();
+			print ("\(className) received Show event.")
+			layoutUI ()
 			return 0
 		}
 
@@ -319,6 +324,6 @@ QTextEdit\nSed ut perspiciatis, unde omnis iste natus error sit voluptatem accus
 			print ("The app currently has \(totalWindows) windows.")
 		}
 
-		return super.processEvent(event);
+		return super.processEvent(event)
 	}
 }

@@ -63,43 +63,38 @@ class BoxLayoutWindow : QMainWindow {
 	public func createMenus ()
 	{
 		let fileMenu : QMenu = QMenu("&File")
-		let action0 = fileMenu.addAction ("&Open")
-		action0!.triggeredHandler = {
+		let action0 = fileMenu.addAction ("&Open", {
 			print ("FILE->OPEN")
-		}
-		let action1 = fileMenu.addAction ("C&lose")
-		action1!.setShortcut (QKeySequence.Close())
-		action1!.triggeredHandler = { [weak self] in
+		})
+
+		let action1 = fileMenu.addAction ("C&lose", { [weak self] in
 			guard let self = self else {
 				return
 			}
 			print ("FILE->CLOSE")
 			self.close()
-		}
-		let action2 = fileMenu.addAction ("E&xit")
-		action2!.setShortcut (QKeySequence.Quit())
-		action2!.triggeredHandler = {
+		})
+		action1!.setShortcut (QKeySequence.Close())
+
+		let action2 = fileMenu.addAction ("E&xit", {
 			print ("FILE->EXIT")
 			QApplication.quit()
-		}
+		})
+		action2!.setShortcut (QKeySequence.Quit())
 
 		let editMenu : QMenu = QMenu("&Edit")
-		let action3 = editMenu.addAction ("Copy")
-		action3!.triggeredHandler = {
+		let action3 = editMenu.addAction ("Copy", {
 			print ("EDIT->COPY")
-		}
-		let action4 = editMenu.addAction ("Cut")
-		action4!.triggeredHandler = {
+		})
+		let action4 = editMenu.addAction ("Cut", {
 			print ("EDIT->CUT")
-		}
-		let action5 = editMenu.addAction ("Paste")
-		action5!.triggeredHandler = {
+		})
+		let action5 = editMenu.addAction ("Paste", {
 			print ("EDIT->PASTE")
-		}
+		})
 
 		let viewMenu : QMenu = QMenu("&View")
-		let action6 = viewMenu.addAction ("Toggle status bar")
-		action6!.triggeredHandler = { [weak self] in
+		let action6 = viewMenu.addAction ("Toggle status bar", { [weak self] in
 			guard let self = self else {
 				return
 			}
@@ -107,14 +102,13 @@ class BoxLayoutWindow : QMainWindow {
 			if let bar = self.statusBar {
 				bar.setHidden(!bar.isHidden())
 			}
-		}
+		})
 
 		let helpMenu : QMenu = QMenu("&Help")
-		let action7 = helpMenu.addAction ("&About")
-		action7!.triggeredHandler = {
+		let action7 = helpMenu.addAction ("&About", {
 			print ("HELP->ABOUT")
 			SwiftQt.infoPopup ("This is BoxLayoutWindow.")
-		}
+		})
 
 		menuBar = QMenuBar ()
 		menuBar!.addMenu (fileMenu)
@@ -192,7 +186,7 @@ class BoxLayoutWindow : QMainWindow {
 
 		horizontalLayout?.addWidget(imageView!)
 
-		self.windowResizedHandler = { [weak self] in
+		self.windowResizedHandler = { [weak self] (_ event: SQEvent) -> Void in
 			guard let self = self else {
 				return
 			}
