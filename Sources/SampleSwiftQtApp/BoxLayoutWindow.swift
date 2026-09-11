@@ -37,6 +37,7 @@ class BoxLayoutWindow : QMainWindow {
 	private var label3 : QLabel?
 	private var label4 : QLabel?
 	private var imageView : QLabel?
+	private var scrollArea : QScrollArea?
 	private var label6 : QLabel?
 	private var label7 : QLabel?
 	private var label8 : QLabel?
@@ -63,7 +64,7 @@ class BoxLayoutWindow : QMainWindow {
 	public func createMenus ()
 	{
 		let fileMenu : QMenu = QMenu("&File")
-		let action0 = fileMenu.addAction ("&Open", {
+		_ = fileMenu.addAction ("&Open", {
 			print ("FILE->OPEN")
 		})
 
@@ -83,18 +84,18 @@ class BoxLayoutWindow : QMainWindow {
 		action2!.setShortcut (QKeySequence.Quit())
 
 		let editMenu : QMenu = QMenu("&Edit")
-		let action3 = editMenu.addAction ("Copy", {
+		_ = editMenu.addAction ("Copy", {
 			print ("EDIT->COPY")
 		})
-		let action4 = editMenu.addAction ("Cut", {
+		_ = editMenu.addAction ("Cut", {
 			print ("EDIT->CUT")
 		})
-		let action5 = editMenu.addAction ("Paste", {
+		_ = editMenu.addAction ("Paste", {
 			print ("EDIT->PASTE")
 		})
 
 		let viewMenu : QMenu = QMenu("&View")
-		let action6 = viewMenu.addAction ("Toggle status bar", { [weak self] in
+		_ = viewMenu.addAction ("Toggle status bar", { [weak self] in
 			guard let self = self else {
 				return
 			}
@@ -105,7 +106,7 @@ class BoxLayoutWindow : QMainWindow {
 		})
 
 		let helpMenu : QMenu = QMenu("&Help")
-		let action7 = helpMenu.addAction ("&About", {
+		_ = helpMenu.addAction ("&About", {
 			print ("HELP->ABOUT")
 			SwiftQt.infoPopup ("This is BoxLayoutWindow.")
 		})
@@ -179,12 +180,17 @@ class BoxLayoutWindow : QMainWindow {
 		verticalLayout?.addWidget(label4!)
 		verticalLayout?.addWidget(calendar!)
 
-		imageView = QLabel(self, "")
+		scrollArea = QScrollArea(self)
+		imageView = QLabel(scrollArea!, "")
+		scrollArea?.setWidget(imageView!)
 		let image = QImage("PIA25970.tif")
+		let imageWidth = image.width()
+		let imageHeight = image.height()
 		print ("Image loaded, size is \(image.width())x\(image.height())")
-		imageView!.setImage(image)
+		imageView?.setImage(image)
+		imageView?.setFrame (QRect.new(0, 0, imageWidth, imageHeight))
 
-		horizontalLayout?.addWidget(imageView!)
+		horizontalLayout?.addWidget(scrollArea!)
 
 		self.windowResizedHandler = { [weak self] (_ event: SQEvent) -> Void in
 			guard let self = self else {

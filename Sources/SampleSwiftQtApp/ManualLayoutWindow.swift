@@ -25,6 +25,7 @@ import SwiftQt
 @MainActor
 class ManualLayoutWindow : QMainWindow {
 	
+	private var nWindows = -1
 	private var menuBar : QMenuBar?
 	private var statusBar : QStatusBar?
 	private var label1 : QLabel?
@@ -35,8 +36,12 @@ class ManualLayoutWindow : QMainWindow {
 	private var textField : QLineEdit?
 	private var table : QTableWidget?
 	private var imageView : QLabel?
+	private var scrollArea : QScrollArea?
 	private var webEngineView : QWebEngineView? 
-	private var nWindows = -1
+	private var textScrollBar : QScrollBar?
+	private var tableScrollBar : QScrollBar?
+	private var imageWidth : Int = 0
+	private var imageHeight : Int = 0
 
 	public required init (x: SQCoord, y: SQCoord, width: SQCoord, height: SQCoord) 
 	{
@@ -77,7 +82,8 @@ class ManualLayoutWindow : QMainWindow {
 			let webEngineView = webEngineView,
 			let table = table,
 			let statusBar = statusBar,
-			let imageView = imageView
+			let imageView = imageView,
+			let scrollArea = scrollArea
 		else {
 			print ("Missing UI element")
 			return
@@ -114,16 +120,17 @@ class ManualLayoutWindow : QMainWindow {
 
 		let verticalViewWidth = (availableWidth - 240 - spacing)/3
 
-		let webviewHeight = totalHeight - spacing - ytop
+		let commonHeight = totalHeight - spacing - ytop
 
 		x = 240
-		webEngineView.setFrame (QRect.new(x, ytop, verticalViewWidth, webviewHeight))
+		webEngineView.setFrame (QRect.new(x, ytop, verticalViewWidth, commonHeight))
 		x += verticalViewWidth
 
-		table.setFrame (QRect.new(x, ytop, verticalViewWidth, webviewHeight))
+		table.setFrame (QRect.new(x, ytop, verticalViewWidth, commonHeight))
 		x += verticalViewWidth
 
-		imageView.setFrame (QRect.new(x, ytop, verticalViewWidth, webviewHeight))
+		scrollArea.setFrame (QRect.new(x, ytop, verticalViewWidth, commonHeight))
+		imageView.setFrame (QRect.new(0, 0, imageWidth, imageHeight))
 	}
 
 	public func createMenus ()
@@ -208,19 +215,36 @@ class ManualLayoutWindow : QMainWindow {
 			}
 		}
 		table!.cellClickedHandler = { row, column in
+			print ("QTableWidget cellClicked at \(row),\(column)")
+
 			let widget = weakTable?.cellWidget(row, column)
 			if widget != nil {
-				print ("Got widget!")
+				print ("Got widget")
 			} else {
 				print ("Didn't get widget")
 			}
 		}
+		table!.cellDoubleClickedHandler = { row, column in
+			print ("QTableWidget cellDoubleClicked at \(row),\(column)")
+		}
+		table!.currentCellChangedHandler = { row, column, previousRow, previousColumn in
+			print ("QTableWidget currentCellChanged from \(previousRow),\(previousColumn) to \(row),\(column)")
+		}
+		table!.itemSelectionChangedHandler = {
+			print ("QTableWidget itemSelectionChanged");
+		}
+		tableScrollBar = table!.verticalScrollBar()
 
 		label1 = QLabel (self, "QLabel")
 		label1!.setStyleSheet ("background-color : cyan; color : #008;")
 		label1!.setWordWrap (true)
 		label1!.setAlignment (Qt.AlignCenter + Qt.AlignVCenter)
 
+		webEngineView = QWebEngineView (self)
+		webEngineView!.setHTML ("""
+
+<html><h1>This is a QWebEngineView.</h1> This is a QWebEngineView.  <p><i>This is a QWebEngineView.</i> <p><b>This is a QWebEngineView.</b><img src=https://apod.nasa.gov/apod/image/2310/WitchHead_Alharbi_3051.jpg >
+""")
 		button1 = QPushButton (self, "Regular QPushButton")
 		button1!.clickedHandler = { [weak self] in
 			guard let self = self else {
@@ -228,8 +252,22 @@ class ManualLayoutWindow : QMainWindow {
 			}
 			let string = self.button1?.text() ?? ""
 			print ("Button \"\(string)\" clicked.")
-			self.setWindowTitle ("This is a test")
-			SwiftQt.infoPopup ("Hello World")
+			self.setWindowTitle ("Changing QWebEngineView URL")
+
+			let badurl = QUrl("example.moo")
+			if badurl.isValid() {
+				print ("Bad URL was incorrectly deemed valid.")
+			} else {
+				print ("Bad URL was correctly considered invalid.")
+			}
+			let goodurl = QUrl("https://doc.qt.io/qt-6/qwebengineview.html")
+			if !goodurl.isValid() {
+				print ("Good URL was incorrectly deemed invalid.")
+			} else {
+				print ("Good URL was correctly considered valid.")
+			}
+
+			webEngineView?.setUrl (goodurl)
 		}
 		button1!.setStyleSheet ("background-color : white; color : #080;")
 
@@ -266,27 +304,49 @@ class ManualLayoutWindow : QMainWindow {
 		}
 
 		editor = QTextEdit (self)
+		editor?.textChangedHandler = {
+			print ("QTextEdit text changed.")
+		}
 		editor?.setText ("""
 QTextEdit\nSed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo.
 """)
+		textScrollBar = editor?.verticalScrollBar()
 
 		textField = QLineEdit (self)
-		textField?.setText ("QLineEdit text field")
+		textField?.setPlaceholderText ("QLineEdit text field")
+		textField?.textChangedHandler = {
+			print ("QLineEdit text changed.")
+		}
+		textField?.editingFinishedHandler = {
+			print ("QLineEdit editing finished.")
+		}
+		textField?.returnPressedHandler = {
+			print ("QLineEdit return pressed.")
+		}
 
-		webEngineView = QWebEngineView (self)
-		webEngineView!.setHTML ("""
-
-<html><h1>This is a QWebEngineView.</h1> This is a QWebEngineView.  <p><i>This is a QWebEngineView.</i> <p><b>This is a QWebEngineView.</b><img src=https://apod.nasa.gov/apod/image/2310/WitchHead_Alharbi_3051.jpg >
-""")
-		imageView = QLabel(self, "")
+		scrollArea = QScrollArea(self)
+		scrollArea?.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn);
+		scrollArea?.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn);
 
 		let image = QImage("PIA25970.tif")
-		print ("QImage loaded, size is \(image.width())x\(image.height())")
+		imageWidth = image.width()
+		imageHeight = image.height()
+		imageView = QLabel(scrollArea!, "")
+		imageView?.setImage(image)
+		imageView?.setFrame (QRect.new(0, 0, imageWidth, imageHeight))
+		scrollArea?.setWidget (imageView!)
+
+		let hbar = scrollArea?.horizontalScrollBar()
+		let vbar = scrollArea?.verticalScrollBar()
+		if let hbar = hbar, let vbar = vbar {
+			print ("Horizontal scrollbar enabled=\(hbar.isEnabled()), minimum=\(hbar.minimum()), maximum=\(hbar.maximum())")
+			print ("Vertical scrollbar enabled=\(vbar.isEnabled()), minimum=\(vbar.minimum()), maximum=\(vbar.maximum())")
+		}
+
+		print ("QImage loaded, size is \(imageWidth)x\(imageHeight)")
 
 		//let pixmap = QPixmap("PIA25970.tif")
 		//print ("QPixmap loaded, size is \(pixmap.width())x\(pixmap.height())")
-
-		imageView!.setImage(image)
 
 		setTitle("Sample App using SwiftQt \(SwiftQt.release)")
 

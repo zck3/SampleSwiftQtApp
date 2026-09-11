@@ -34,6 +34,7 @@ class GridLayoutWindow : QMainWindow {
 	private var label3 : QLabel?
 	private var label4 : QLabel?
 	private var imageView : QLabel?
+	private var scrollArea : QScrollArea?
 	private var label6 : QLabel?
 	private var groupBox : QGroupBox?
 	private var radioButton1 : QRadioButton?
@@ -85,19 +86,19 @@ class GridLayoutWindow : QMainWindow {
 
 		let editMenu : QMenu = QMenu("&Edit")
 		let action3 = QAction("Copy")
-		editMenu.addAction (action3, {
+		_ = editMenu.addAction (action3, {
 			print ("EDIT->COPY")
 		})
 
-		let action4 = editMenu.addAction ("Cut", {
+		_ = editMenu.addAction ("Cut", {
 			print ("EDIT->CUT")
 		})
-		let action5 = editMenu.addAction ("Paste", {
+		_ = editMenu.addAction ("Paste", {
 			print ("EDIT->PASTE")
 		})
 
 		let viewMenu : QMenu = QMenu("&View")
-		let action6 = viewMenu.addAction ("Toggle status bar", { [weak self] in
+		_ = viewMenu.addAction ("Toggle status bar", { [weak self] in
 			guard let self = self else {
 				return
 			}
@@ -108,7 +109,7 @@ class GridLayoutWindow : QMainWindow {
 		})
 
 		let helpMenu : QMenu = QMenu("&Help")
-		let action7 = helpMenu.addAction ("&About", {
+		_ = helpMenu.addAction ("&About", {
 			print ("HELP->ABOUT")
 			SwiftQt.infoPopup ("This is GridLayoutWindow.")
 		})
@@ -240,19 +241,23 @@ class GridLayoutWindow : QMainWindow {
 			lcdNumber.setMaximumHeight (19)
 		}
 
-		imageView = QLabel(self, "")
+		scrollArea = QScrollArea(self)
+		imageView = QLabel(scrollArea!, "")
+		scrollArea?.setWidget(imageView!)
 
 		let image = QImage("PIA25970.tif")
 		print ("image loaded, size is \(image.width())x\(image.height())")
-
 		imageView!.setImage(image)
+		let imageWidth = image.width()
+		let imageHeight = image.height()
+		imageView?.setFrame (QRect.new(0, 0, imageWidth, imageHeight))
 
 		mainLayout?.addWidget(label1!, row: 0, column: 0)
 		mainLayout?.addWidget(slider!, row: 0, column: 1)
 		mainLayout?.addWidget(label3!, row: 0, column: 2)
 
 		mainLayout?.addWidget(label4!, row: 1, column: 0)
-		mainLayout?.addWidget(imageView!, row: 1, column: 1)
+		mainLayout?.addWidget(scrollArea!, row: 1, column: 1)
 		mainLayout?.addWidget(label6!, row: 1, column: 2)
 
 		mainLayout?.addWidget(checkbox!, row: 2, column: 0)
