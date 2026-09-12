@@ -36,19 +36,20 @@ class BoxLayoutWindow : QMainWindow {
 	private var label2 : QLabel?
 	private var label3 : QLabel?
 	private var label4 : QLabel?
-	private var imageView : QLabel?
-	private var scrollArea : QScrollArea?
 	private var label6 : QLabel?
 	private var label7 : QLabel?
 	private var label8 : QLabel?
 	private var label9 : QLabel?
 	private var calendar : QCalendarWidget?
+	private var document : QPdfDocument?
+	private var pdfview : QPdfView?
 
 	private var nWindows = -1
 
 	public required init (x: SQCoord, y: SQCoord, width: SQCoord, height: SQCoord) 
 	{
 		super.init (x: x, y: y, width: width, height: height)
+
 		constructUI()
 
 		self.windowClosedHandler = { [weak self] in
@@ -135,8 +136,10 @@ class BoxLayoutWindow : QMainWindow {
 
 		leftmostWidget = QWidget(self)
 		leftmostWidget!.setMinimumSize (QSize(200,1))
+		leftmostWidget!.setMaximumWidth (200)
 		verticalLayout = QVBoxLayout(leftmostWidget!)
 		verticalLayout!.setSpacing(5)
+		//verticalLayout!.setMaximumSize (QSize(200,999))
 		horizontalLayout!.addWidget (leftmostWidget!)
 
 		label1 = QLabel (self, "This is a QLabel")
@@ -180,17 +183,24 @@ class BoxLayoutWindow : QMainWindow {
 		verticalLayout?.addWidget(label4!)
 		verticalLayout?.addWidget(calendar!)
 
-		scrollArea = QScrollArea(self)
-		imageView = QLabel(scrollArea!, "")
-		scrollArea?.setWidget(imageView!)
-		let image = QImage("PIA25970.tif")
-		let imageWidth = image.width()
-		let imageHeight = image.height()
-		print ("Image loaded, size is \(image.width())x\(image.height())")
-		imageView?.setImage(image)
-		imageView?.setFrame (QRect.new(0, 0, imageWidth, imageHeight))
+		document = QPdfDocument(self)
+		let loadResult = document?.load("Metamorphoseon.pdf") ?? -1
+		if loadResult != Qt.PdfNone {
+			print ("Error loading sample PDF \(loadResult).")
+		} else {
+			let count = document?.pageCount() ?? -1
+			print ("Loaded PDF, total pages = \(count)")
+		}
 
-		horizontalLayout?.addWidget(scrollArea!)
+		pdfview = QPdfView(self)
+		if let document = document {
+			pdfview?.setDocument(document)
+			print ("Set PDF document.")
+		} else {
+			print ("Failed to load PDF.")
+		}
+
+		horizontalLayout?.addWidget(pdfview!)
 
 		self.windowResizedHandler = { [weak self] (_ event: SQEvent) -> Void in
 			guard let self = self else {

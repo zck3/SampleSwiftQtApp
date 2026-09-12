@@ -1,7 +1,7 @@
 
 # SampleSwiftQtApp
 
-Version 0.3, by Zack T Smith, 3 at zs3 dot me
+by Zack T Smith, 3 at zs3 dot me
 
 This is a sample app that demonstrates a few ways to lay out
 widgets in a Qt 6 window, using SwiftQt. It also demonstrates
@@ -31,13 +31,16 @@ but is now separate, so I am renumbering the releases:
 * 0.1 Original demo code with manual layout.
 * 0.2 Added various automatic layouts.
 * 0.3 Separated demo app from SwiftQt library.
+* 0.4 Updated for SwiftQt 0.28.
+* 0.5 Updated for SwiftQt 0.29, added use of QPdfView.
 
 ## Media
 
-The included TIFF image for the demo is from here:
-https://www.jpl.nasa.gov/images/pia25970-perseverance-rover-watches-ingenuity-mars-helicopters-54th-flight/
+* The included PDF is Apuleius' comedic novel Metamorphoses, also known as The Golden Ass.
 
-"PIA25970 is a NASA image identifier for media showing 
+* The included TIFF image for the demo is from here:
+  https://www.jpl.nasa.gov/images/pia25970-perseverance-rover-watches-ingenuity-mars-helicopters-54th-flight/
+  "PIA25970 is a NASA image identifier for media showing 
 the Perseverance Rover watching the Ingenuity Mars Helicopter 
 perform its 54th flight on August 3, 2023."
 
