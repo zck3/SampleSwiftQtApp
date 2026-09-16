@@ -54,12 +54,14 @@ class BoxLayoutWindow : QMainWindow {
 
 		self.windowClosedHandler = { [weak self] in
 			self?.tearDownUI()
+			return true
 		}
 	}
 
 	private func tearDownUI () 
 	{
 		setMenuBar (nil)
+		setCentralWidget (nil)
 	}
 
 	public func createMenus ()
@@ -167,14 +169,16 @@ class BoxLayoutWindow : QMainWindow {
 		calendar!.setHorizontalHeaderFormat(QCalendarWidget.SingleLetterDayNames)
 		calendar!.selectionChangedHandler = { [weak self] in
 			guard let self = self else {
-				return
+				return false
 			}
 			if let date : QDate = self.calendar?.selectedDate() {
 				let y = date.year()
 				let m = date.month()
 				let d = date.day()
 				print ("You selected: Year=\(y) Month=\(m) Day=\(d)")
+				return true
 			}
+			return false
 		}
 
 		verticalLayout?.addWidget(label1!)
@@ -195,6 +199,8 @@ class BoxLayoutWindow : QMainWindow {
 		pdfview = QPdfView(self)
 		if let document = document {
 			pdfview?.setDocument(document)
+			pdfview?.setPageMode(Qt.PageModeMultiPage)
+			pdfview?.setZoomMode(Qt.ZoomModeFitToWidth)
 			print ("Set PDF document.")
 		} else {
 			print ("Failed to load PDF.")
@@ -202,13 +208,14 @@ class BoxLayoutWindow : QMainWindow {
 
 		horizontalLayout?.addWidget(pdfview!)
 
-		self.windowResizedHandler = { [weak self] (_ event: SQEvent) -> Void in
+		self.windowResizedHandler = { [weak self] (_ event: QEvent) -> Bool in
 			guard let self = self else {
-				return
+				return false
 			}
 			let newWidth = self.width()
 			let newHeight = self.height()
 			print ("BoxLayoutWindow windowResizedHandler called, new size is \(newWidth)x\(newHeight).");
+			return true
 		}
 
 		setTitle ("Box Layout")
@@ -217,14 +224,14 @@ class BoxLayoutWindow : QMainWindow {
 		show()
 	}
 
-	public override func processEvent (_ event: SQEvent) -> Int
+	public override func event (_ event: QEvent) -> Bool
 	{
 		let eventType = event.type
 
 		if eventType == QEventShow {
 			let className = String(describing: type(of:self))
 			print ("\(className) got QEventShow event.");
-			return 0
+			return true
 		}
 
 		let totalWindows = QApplication.totalMainWindows ()
@@ -233,6 +240,6 @@ class BoxLayoutWindow : QMainWindow {
 			print ("The app currently has \(totalWindows) windows.")
 		}
 
-		return super.processEvent(event);
+		return super.event(event) 
 	}
 }

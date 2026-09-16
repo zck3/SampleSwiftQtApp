@@ -33,6 +33,7 @@ but is now separate, so I am renumbering the releases:
 * 0.3 Separated demo app from SwiftQt library.
 * 0.4 Updated for SwiftQt 0.28.
 * 0.5 Updated for SwiftQt 0.29, added use of QPdfView.
+* 0.6 Updated for SwiftQt 0.30.
 
 ## Media
 

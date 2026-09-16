@@ -23,8 +23,8 @@ import Foundation
 import SwiftQt
 
 @MainActor
-class ManualLayoutWindow : QMainWindow {
-	
+class ManualLayoutWindow : QMainWindow 
+{
 	private var nWindows = -1
 	private var menuBar : QMenuBar?
 	private var statusBar : QStatusBar?
@@ -48,13 +48,15 @@ class ManualLayoutWindow : QMainWindow {
 		super.init (x: x, y: y, width: width, height: height)
 		constructUI()
 
-		self.windowResizedHandler = { [weak self] (event : SQEvent) -> Void in 
+		self.windowResizedHandler = { [weak self] (event : QEvent) -> Bool in 
 			print ("windowResizedHandler"); fflush(nil)
 			self?.layoutUI ()
+			return true
 		}
 		self.windowClosedHandler = { [weak self] in
 			print ("windowClosedHandler"); fflush(nil)
 			self?.tearDownUI()
+			return true
 		}
 	}
 
@@ -213,6 +215,7 @@ class ManualLayoutWindow : QMainWindow {
 			} else {
 				print ("Didn't get item")
 			}
+			return true
 		}
 		table!.cellClickedHandler = { row, column in
 			print ("QTableWidget cellClicked at \(row),\(column)")
@@ -223,15 +226,19 @@ class ManualLayoutWindow : QMainWindow {
 			} else {
 				print ("Didn't get widget")
 			}
+			return true
 		}
 		table!.cellDoubleClickedHandler = { row, column in
 			print ("QTableWidget cellDoubleClicked at \(row),\(column)")
+			return true
 		}
 		table!.currentCellChangedHandler = { row, column, previousRow, previousColumn in
 			print ("QTableWidget currentCellChanged from \(previousRow),\(previousColumn) to \(row),\(column)")
+			return true
 		}
 		table!.itemSelectionChangedHandler = {
 			print ("QTableWidget itemSelectionChanged");
+			return true
 		}
 		tableScrollBar = table!.verticalScrollBar()
 
@@ -248,7 +255,7 @@ class ManualLayoutWindow : QMainWindow {
 		button1 = QPushButton (self, "Regular QPushButton")
 		button1!.clickedHandler = { [weak self] in
 			guard let self = self else {
-				return
+				return false
 			}
 			let string = self.button1?.text() ?? ""
 			print ("Button \"\(string)\" clicked.")
@@ -268,6 +275,7 @@ class ManualLayoutWindow : QMainWindow {
 			}
 
 			webEngineView?.setUrl (goodurl)
+			return true
 		}
 		button1!.setStyleSheet ("background-color : white; color : #080;")
 
@@ -275,7 +283,7 @@ class ManualLayoutWindow : QMainWindow {
 		button2!.setFlat (true)
 		button2!.clickedHandler = { [weak self] in
 			guard let self = self else {
-				return
+				return false
 			}
 			let string = self.button2?.text() ?? ""
 			print ("Button \"\(string)\" clicked.")
@@ -285,13 +293,14 @@ class ManualLayoutWindow : QMainWindow {
 			} else {
 				self.setTitle("You pressed NO")
 			}
+			return true
 		}
 
 		button3 = QPushButton (self, "Remove QTextEdit")
 		button3!.setDefault (true)
 		button3!.clickedHandler = { [weak self] in
 			guard let self = self else {
-				return
+				return false
 			}
 			let string = self.button3!.text()
 			print ("Button \"\(string)\" clicked.")
@@ -301,11 +310,13 @@ class ManualLayoutWindow : QMainWindow {
 			self.editor = nil
 
 			QApplication.beep()
+			return true
 		}
 
 		editor = QTextEdit (self)
 		editor?.textChangedHandler = {
 			print ("QTextEdit text changed.")
+			return true
 		}
 		editor?.setText ("""
 QTextEdit\nSed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo.
@@ -316,12 +327,15 @@ QTextEdit\nSed ut perspiciatis, unde omnis iste natus error sit voluptatem accus
 		textField?.setPlaceholderText ("QLineEdit text field")
 		textField?.textChangedHandler = {
 			print ("QLineEdit text changed.")
+			return true
 		}
 		textField?.editingFinishedHandler = {
 			print ("QLineEdit editing finished.")
+			return true
 		}
 		textField?.returnPressedHandler = {
 			print ("QLineEdit return pressed.")
+			return true
 		}
 
 		scrollArea = QScrollArea(self)
@@ -350,13 +364,14 @@ QTextEdit\nSed ut perspiciatis, unde omnis iste natus error sit voluptatem accus
 
 		setTitle("Sample App using SwiftQt \(SwiftQt.release)")
 
-		self.windowResizedHandler = { [weak self] (event : SQEvent) -> Void in
+		self.windowResizedHandler = { [weak self] (event : QEvent) -> Bool in
 			guard let self = self else {
-				return
+				return false
 			}
 			let newWidth = self.width()
 			let newHeight = self.height()
 			print ("ManualLayoutWindow windowResizedHandler called, new size is \(newWidth)x\(newHeight).")
+			return true
 		}
 
 		statusBar = QStatusBar (self, "This is the status bar.")
@@ -365,7 +380,7 @@ QTextEdit\nSed ut perspiciatis, unde omnis iste natus error sit voluptatem accus
 		show()
 	}
 
-	public override func processEvent (_ event: SQEvent) -> Int
+	public override func event (_ event: QEvent) -> Bool
 	{
 		// This just handles windows events at the meta level.
 
@@ -375,7 +390,7 @@ QTextEdit\nSed ut perspiciatis, unde omnis iste natus error sit voluptatem accus
 			let className = String(describing: type(of:self))
 			print ("\(className) received Show event.")
 			layoutUI ()
-			return 0
+			return true
 		}
 
 		let totalWindows = QApplication.totalMainWindows ()
@@ -384,6 +399,10 @@ QTextEdit\nSed ut perspiciatis, unde omnis iste natus error sit voluptatem accus
 			print ("The app currently has \(totalWindows) windows.")
 		}
 
-		return super.processEvent(event)
+		// NOTE: If we're overriding event(), we have to call super.event()
+		// to ensure that the closures for e.g. resizing are called
+		// from its event handler.
+		//
+		return super.event(event) 
 	}
 }

@@ -53,12 +53,14 @@ class GridLayoutWindow : QMainWindow {
 
 		self.windowClosedHandler = { [weak self] in
 			self?.tearDownUI()
+			return true
 		}
 	}
 
 	private func tearDownUI () 
 	{
 		setMenuBar (nil)
+		setCentralWidget (nil)
 	}
 
 	public func createMenus ()
@@ -161,11 +163,12 @@ class GridLayoutWindow : QMainWindow {
 			slider.valueChangedHandler = { value in 
 				guard let slider = weakSelf?.slider,
 				      let lcd = weakSelf?.lcdNumber else {
-					return
+					return false
 				}
 				let value : Int = slider.value()
 				print ("Slider value changed to \(value)")
 				lcd.display(value)
+				return true
 			}
 		}
 
@@ -199,18 +202,20 @@ class GridLayoutWindow : QMainWindow {
 		radioButton1 = QRadioButton (self, "Radio Button 1")
 		radioButton1!.toggledHandler = { [weak self] in
 			guard let self = self else {
-				return
+				return false
 			}
 			let value = self.radioButton1?.isChecked() ?? false
 			print ("radioButton1 was toggled, isChecked=\(value)")
+			return true
 		}
 		radioButton2 = QRadioButton (self,"Radio Button 2")
 		radioButton2!.toggledHandler = { [weak self] in
 			guard let self = self else {
-				return
+				return false
 			}
 			let value = self.radioButton2?.isChecked() ?? false
 			print ("radioButton2 was toggled, isChecked=\(value)")
+			return true
 		}
 		groupLayout!.addWidget(radioButton1!)
 		groupLayout!.addWidget(radioButton2!)
@@ -218,7 +223,7 @@ class GridLayoutWindow : QMainWindow {
 		checkbox = QCheckBox (self, "QCheckBox")
 		checkbox!.stateChangedHandler = { [weak self] in
 			guard let self = self else {
-				return
+				return false
 			}
 			let checkState = self.checkbox?.checkState() // 3 possible values
 			var string = "?"
@@ -231,6 +236,7 @@ class GridLayoutWindow : QMainWindow {
 				string = "unchecked"
 			}
 			print ("The checkbox was toggled, checkstate=\(string)")
+			return true
 		}
 		
 		lcdNumber = QLCDNumber(self, numberOfDigits: 7)
@@ -264,13 +270,14 @@ class GridLayoutWindow : QMainWindow {
 		mainLayout?.addWidget(groupBox!, row: 2, column: 1)
 		mainLayout?.addWidget(lcdNumber!, row: 2, column: 2)
 
-		self.windowResizedHandler = { [weak self] (_ event: SQEvent) -> Void in
+		self.windowResizedHandler = { [weak self] (_ event: QEvent) -> Bool in
 			guard let self = self else {
-				return
+				return false
 			}
 			let newWidth = self.width()
 			let newHeight = self.height()
 			print ("GridLayoutWindow windowResizedHandler called, new size is \(newWidth)x\(newHeight).");
+			return true
 		}
 
 		setTitle ("Grid Layout")
@@ -283,7 +290,7 @@ class GridLayoutWindow : QMainWindow {
 		show()
 	}
 
-	public override func processEvent (_ event: SQEvent) -> Int
+	public override func event (_ event: QEvent) -> Bool
 	{
 		// This just handles windows events at the meta level.
 
@@ -292,7 +299,7 @@ class GridLayoutWindow : QMainWindow {
 		if eventType == QEventShow {
 			let className = String(describing: type(of:self))
 			print ("\(className) got QEventShow event.");
-			return 0
+			return true
 		}
 
 		let totalWindows = QApplication.totalMainWindows ()
@@ -301,6 +308,6 @@ class GridLayoutWindow : QMainWindow {
 			print ("The app currently has \(totalWindows) windows.")
 		}
 
-		return super.processEvent(event);
+		return super.event(event) 
 	}
 }
