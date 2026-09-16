@@ -25,8 +25,8 @@ import PackageDescription
 let package = Package(
     name: "SampleSwiftQtApp",
     dependencies: [
-        //.package(url: "https://github.com/zck3/SwiftQt", branch: "main")
-        .package(url: "file:///home/zack/Projects/SwiftQt", branch: "main")
+        .package(url: "https://github.com/zck3/SwiftQt", branch: "main")
+        //.package(url: "file:///home/zack/Projects/SwiftQt", branch: "main")
     ],
     targets: [
         .executableTarget(

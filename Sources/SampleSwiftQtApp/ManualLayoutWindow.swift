@@ -205,7 +205,7 @@ class ManualLayoutWindow : QMainWindow
 		table!.setHorizontalHeaderLabels (["A", "B", "C", "D", "E"])
 		table!.setVerticalHeaderLabels (["fee", "fie", "foe", "fum"])
 		weak let weakTable : QTableWidget? = table
-		table!.cellChangedHandler = { row, column in
+		table!.cellChangedSlot = { row, column in
 			print ("QTableWidget cellChanged at \(row),\(column)")
 
 			let item : QTableWidgetItem? = weakTable?.currentItem()
@@ -215,9 +215,8 @@ class ManualLayoutWindow : QMainWindow
 			} else {
 				print ("Didn't get item")
 			}
-			return true
 		}
-		table!.cellClickedHandler = { row, column in
+		table!.cellClickedSlot = { row, column in
 			print ("QTableWidget cellClicked at \(row),\(column)")
 
 			let widget = weakTable?.cellWidget(row, column)
@@ -226,19 +225,15 @@ class ManualLayoutWindow : QMainWindow
 			} else {
 				print ("Didn't get widget")
 			}
-			return true
 		}
-		table!.cellDoubleClickedHandler = { row, column in
+		table!.cellDoubleClickedSlot = { row, column in
 			print ("QTableWidget cellDoubleClicked at \(row),\(column)")
-			return true
 		}
-		table!.currentCellChangedHandler = { row, column, previousRow, previousColumn in
+		table!.currentCellChangedSlot = { row, column, previousRow, previousColumn in
 			print ("QTableWidget currentCellChanged from \(previousRow),\(previousColumn) to \(row),\(column)")
-			return true
 		}
-		table!.itemSelectionChangedHandler = {
+		table!.itemSelectionChangedSlot = {
 			print ("QTableWidget itemSelectionChanged");
-			return true
 		}
 		tableScrollBar = table!.verticalScrollBar()
 
@@ -252,10 +247,10 @@ class ManualLayoutWindow : QMainWindow
 
 <html><h1>This is a QWebEngineView.</h1> This is a QWebEngineView.  <p><i>This is a QWebEngineView.</i> <p><b>This is a QWebEngineView.</b><img src=https://apod.nasa.gov/apod/image/2310/WitchHead_Alharbi_3051.jpg >
 """)
-		button1 = QPushButton (self, "Regular QPushButton")
-		button1!.clickedHandler = { [weak self] in
+		button1 = QPushButton (self, "Click to change\nweb URL")
+		button1!.clickedSlot = { [weak self] in
 			guard let self = self else {
-				return false
+				return 
 			}
 			let string = self.button1?.text() ?? ""
 			print ("Button \"\(string)\" clicked.")
@@ -275,15 +270,14 @@ class ManualLayoutWindow : QMainWindow
 			}
 
 			webEngineView?.setUrl (goodurl)
-			return true
 		}
 		button1!.setStyleSheet ("background-color : white; color : #080;")
 
-		button2 = QPushButton (self, "Flat QPushButton")
+		button2 = QPushButton (self, "Click to zoom in\nweb browser")
 		button2!.setFlat (true)
-		button2!.clickedHandler = { [weak self] in
+		button2!.clickedSlot = { [weak self] in
 			guard let self = self else {
-				return false
+				return 
 			}
 			let string = self.button2?.text() ?? ""
 			print ("Button \"\(string)\" clicked.")
@@ -293,14 +287,18 @@ class ManualLayoutWindow : QMainWindow
 			} else {
 				self.setTitle("You pressed NO")
 			}
-			return true
+
+			let zf = webEngineView!.zoomFactor()
+			print ("Original webview zoom factor: \(zf)")
+			webEngineView?.setZoomFactor (zf * 1.25)
+			print ("New webview zoom factor: \(webEngineView!.zoomFactor())")
 		}
 
 		button3 = QPushButton (self, "Remove QTextEdit")
 		button3!.setDefault (true)
-		button3!.clickedHandler = { [weak self] in
+		button3!.clickedSlot = { [weak self] in
 			guard let self = self else {
-				return false
+				return 
 			}
 			let string = self.button3!.text()
 			print ("Button \"\(string)\" clicked.")
@@ -310,13 +308,11 @@ class ManualLayoutWindow : QMainWindow
 			self.editor = nil
 
 			QApplication.beep()
-			return true
 		}
 
 		editor = QTextEdit (self)
-		editor?.textChangedHandler = {
+		editor?.textChangedSlot = {
 			print ("QTextEdit text changed.")
-			return true
 		}
 		editor?.setText ("""
 QTextEdit\nSed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo.
@@ -325,17 +321,14 @@ QTextEdit\nSed ut perspiciatis, unde omnis iste natus error sit voluptatem accus
 
 		textField = QLineEdit (self)
 		textField?.setPlaceholderText ("QLineEdit text field")
-		textField?.textChangedHandler = {
+		textField?.textChangedSlot = {
 			print ("QLineEdit text changed.")
-			return true
 		}
-		textField?.editingFinishedHandler = {
+		textField?.editingFinishedSlot = {
 			print ("QLineEdit editing finished.")
-			return true
 		}
-		textField?.returnPressedHandler = {
+		textField?.returnPressedSlot = {
 			print ("QLineEdit return pressed.")
-			return true
 		}
 
 		scrollArea = QScrollArea(self)
@@ -363,16 +356,6 @@ QTextEdit\nSed ut perspiciatis, unde omnis iste natus error sit voluptatem accus
 		//print ("QPixmap loaded, size is \(pixmap.width())x\(pixmap.height())")
 
 		setTitle("Sample App using SwiftQt \(SwiftQt.release)")
-
-		self.windowResizedHandler = { [weak self] (event : QEvent) -> Bool in
-			guard let self = self else {
-				return false
-			}
-			let newWidth = self.width()
-			let newHeight = self.height()
-			print ("ManualLayoutWindow windowResizedHandler called, new size is \(newWidth)x\(newHeight).")
-			return true
-		}
 
 		statusBar = QStatusBar (self, "This is the status bar.")
 		setStatusBar (statusBar!)

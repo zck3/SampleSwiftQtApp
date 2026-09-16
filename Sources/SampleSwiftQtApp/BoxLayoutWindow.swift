@@ -167,18 +167,16 @@ class BoxLayoutWindow : QMainWindow {
 		calendar = QCalendarWidget(self)
 		calendar!.setMinimumSize (QSize(200,250))
 		calendar!.setHorizontalHeaderFormat(QCalendarWidget.SingleLetterDayNames)
-		calendar!.selectionChangedHandler = { [weak self] in
+		calendar!.selectionChangedSlot = { [weak self] in
 			guard let self = self else {
-				return false
+				return 
 			}
 			if let date : QDate = self.calendar?.selectedDate() {
 				let y = date.year()
 				let m = date.month()
 				let d = date.day()
 				print ("You selected: Year=\(y) Month=\(m) Day=\(d)")
-				return true
 			}
-			return false
 		}
 
 		verticalLayout?.addWidget(label1!)

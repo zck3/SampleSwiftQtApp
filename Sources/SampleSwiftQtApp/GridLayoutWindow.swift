@@ -160,15 +160,14 @@ class GridLayoutWindow : QMainWindow {
 			slider.setStyleSheet ("background-color : green; color : white;")
 			slider.setValue (20)
                         weak let weakSelf = self
-			slider.valueChangedHandler = { value in 
+			slider.valueChangedSlot = { value in 
 				guard let slider = weakSelf?.slider,
 				      let lcd = weakSelf?.lcdNumber else {
-					return false
+					return 
 				}
 				let value : Int = slider.value()
 				print ("Slider value changed to \(value)")
 				lcd.display(value)
-				return true
 			}
 		}
 
@@ -200,30 +199,28 @@ class GridLayoutWindow : QMainWindow {
 		groupLayout = QHBoxLayout(groupBox!)
 
 		radioButton1 = QRadioButton (self, "Radio Button 1")
-		radioButton1!.toggledHandler = { [weak self] in
+		radioButton1!.toggledSlot = { [weak self] in
 			guard let self = self else {
-				return false
+				return 
 			}
 			let value = self.radioButton1?.isChecked() ?? false
 			print ("radioButton1 was toggled, isChecked=\(value)")
-			return true
 		}
 		radioButton2 = QRadioButton (self,"Radio Button 2")
-		radioButton2!.toggledHandler = { [weak self] in
+		radioButton2!.toggledSlot = { [weak self] in
 			guard let self = self else {
-				return false
+				return 
 			}
 			let value = self.radioButton2?.isChecked() ?? false
 			print ("radioButton2 was toggled, isChecked=\(value)")
-			return true
 		}
 		groupLayout!.addWidget(radioButton1!)
 		groupLayout!.addWidget(radioButton2!)
 
 		checkbox = QCheckBox (self, "QCheckBox")
-		checkbox!.stateChangedHandler = { [weak self] in
+		checkbox!.stateChangedSlot = { [weak self] in
 			guard let self = self else {
-				return false
+				return 
 			}
 			let checkState = self.checkbox?.checkState() // 3 possible values
 			var string = "?"
@@ -236,7 +233,6 @@ class GridLayoutWindow : QMainWindow {
 				string = "unchecked"
 			}
 			print ("The checkbox was toggled, checkstate=\(string)")
-			return true
 		}
 		
 		lcdNumber = QLCDNumber(self, numberOfDigits: 7)
