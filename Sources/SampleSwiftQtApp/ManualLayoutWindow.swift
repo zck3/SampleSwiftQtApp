@@ -274,6 +274,9 @@ class ManualLayoutWindow : QMainWindow
 		button1!.setStyleSheet ("background-color : white; color : #080;")
 
 		button2 = QPushButton (self, "Click to zoom in\nweb browser")
+		var font2 = QFont("Times", 13, 0, true)
+		font2.setUnderline(true)
+		button2!.setFont (font2)
 		button2!.setFlat (true)
 		button2!.clickedSlot = { [weak self] in
 			guard let self = self else {
@@ -282,16 +285,15 @@ class ManualLayoutWindow : QMainWindow
 			let string = self.button2?.text() ?? ""
 			print ("Button \"\(string)\" clicked.")
 			
-			if SwiftQt.yesNoQuestion ("This is a question popup", "Do you agree?") {
+			if SwiftQt.yesNoQuestion ("This is a question popup", "Do you agree to zoom 2X?") {
 				self.setTitle("You pressed YES")
+				let zf = webEngineView!.zoomFactor()
+				print ("Original webview zoom factor: \(zf)")
+				webEngineView?.setZoomFactor (zf * 1.25)
+				print ("New webview zoom factor: \(webEngineView!.zoomFactor())")
 			} else {
 				self.setTitle("You pressed NO")
 			}
-
-			let zf = webEngineView!.zoomFactor()
-			print ("Original webview zoom factor: \(zf)")
-			webEngineView?.setZoomFactor (zf * 1.25)
-			print ("New webview zoom factor: \(webEngineView!.zoomFactor())")
 		}
 
 		button3 = QPushButton (self, "Remove QTextEdit")
@@ -311,6 +313,8 @@ class ManualLayoutWindow : QMainWindow
 		}
 
 		editor = QTextEdit (self)
+		let font = QFont("Helvetica Narrow", 12, Qt.WeightNormal, false)
+		editor?.setFont (font)
 		editor?.textChangedSlot = {
 			print ("QTextEdit text changed.")
 		}

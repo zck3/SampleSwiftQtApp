@@ -35,6 +35,7 @@ but is now separate, so I am renumbering the releases:
 * 0.5 Updated for SwiftQt 0.29, added use of QPdfView.
 * 0.6 Updated for SwiftQt 0.30.
 * 0.7 Updated for SwiftQt 0.31.
+* 0.8 Updated for SwiftQt 0.32.
 
 ## Media
 

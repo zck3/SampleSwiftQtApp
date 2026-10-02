@@ -135,16 +135,24 @@ class GridLayoutWindow : QMainWindow {
 		mainLayout = QGridLayout(centralWidget!)
 
 		label1 = QLabel (self, "This is a QLabel")
+		let font1 = QFont("Courier", 14, Qt.WeightLight, false)
+		label1!.setFont (font1)
 		label1!.setStyleSheet ("background-color : cyan; color : #008;");
 		label1!.setWordWrap (true)
 		label1!.setAlignment (Qt.AlignCenter + Qt.AlignVCenter)
 
 		label3 = QLabel (self, "This is a QLabel")
+		let font3 = QFont("Palatino", 17, Qt.WeightBold, true)
+		label3!.setFont (font3)
 		label3!.setStyleSheet ("background-color : purple; color : yellow;");
 		label3!.setWordWrap (true)
 		label3!.setAlignment (Qt.AlignCenter + Qt.AlignVCenter)
 
 		label4 = QLabel (self, "This is a QLabel")
+		var font4 = QFont("Georgia", 15, Qt.WeightNormal, true)
+		font4.setStrikeOut (true)
+		font4.setUnderline (true)
+		label4!.setFont (font4)
 		label4!.setStyleSheet ("background-color : orange; color : red;");
 		label4!.setWordWrap (false)
 		label4!.setAlignment (Qt.AlignCenter + Qt.AlignVCenter)
@@ -198,7 +206,7 @@ class GridLayoutWindow : QMainWindow {
 		//groupBox?.setMinimumSize(QSize(1, 120))
 		groupLayout = QHBoxLayout(groupBox!)
 
-		radioButton1 = QRadioButton (self, "Radio Button 1")
+		radioButton1 = QRadioButton (groupBox!, "Radio Button 1")
 		radioButton1!.toggledSlot = { [weak self] in
 			guard let self = self else {
 				return 
@@ -206,7 +214,7 @@ class GridLayoutWindow : QMainWindow {
 			let value = self.radioButton1?.isChecked() ?? false
 			print ("radioButton1 was toggled, isChecked=\(value)")
 		}
-		radioButton2 = QRadioButton (self,"Radio Button 2")
+		radioButton2 = QRadioButton (groupBox!,"Radio Button 2")
 		radioButton2!.toggledSlot = { [weak self] in
 			guard let self = self else {
 				return 
@@ -217,7 +225,7 @@ class GridLayoutWindow : QMainWindow {
 		groupLayout!.addWidget(radioButton1!)
 		groupLayout!.addWidget(radioButton2!)
 
-		checkbox = QCheckBox (self, "QCheckBox")
+		checkbox = QCheckBox (groupBox!, "QCheckBox")
 		checkbox!.stateChangedSlot = { [weak self] in
 			guard let self = self else {
 				return 

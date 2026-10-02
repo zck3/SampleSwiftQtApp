@@ -150,6 +150,8 @@ class BoxLayoutWindow : QMainWindow {
 		label1!.setAlignment (Qt.AlignCenter + Qt.AlignVCenter)
 
 		label2 = QLabel (self, "This is a QLabel")
+		let font2 = QFont ("Palatino", 14, Qt.WeightDemiBold, true)
+		label2!.setFont (font2)
 		label2!.setStyleSheet ("background-color : blue; color : white;");
 		label2!.setWordWrap (true)
 		label2!.setAlignment (Qt.AlignCenter + Qt.AlignVCenter)
