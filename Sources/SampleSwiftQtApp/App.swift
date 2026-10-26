@@ -51,6 +51,7 @@ class App {
 	var window1 : ManualLayoutWindow?
 	var window2 : GridLayoutWindow?
 	var window3 : BoxLayoutWindow?
+	var window4 : DeclarativeWindow?
 
 	required init () {
 		let dpi = QScreen.primaryScreenLogicalDotsPerInch()
@@ -58,7 +59,7 @@ class App {
 		let height = QScreen.primaryScreenHeight()
 		print ("Primary screen DPI=\(dpi), size=\(width)x\(height)")
 
-		window1 = ManualLayoutWindow(x: 100, y: 100, width: width-200, height: height-200)
+		window1 = ManualLayoutWindow(x: 100, y: 100, width: 700, height: 600)
 		window1?.show()
 
 		window2 = GridLayoutWindow(x: 150, y: 150, width: 500, height: 500)
@@ -66,12 +67,16 @@ class App {
 
 		window3 = BoxLayoutWindow(x: 200, y: 200, width: 600, height: 400)
 		window3?.show()
+
+		window4 = DeclarativeWindow(x: 300, y: 300, width: 300, height: 470)
+		window4?.show()
 	}
 
 	public func teardown() {
 		self.window1 = nil
 		self.window2 = nil
 		self.window3 = nil
+		self.window4 = nil
 	}
 
 	deinit {

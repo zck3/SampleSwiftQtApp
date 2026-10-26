@@ -7,6 +7,10 @@ This is a sample app that demonstrates a few ways to lay out
 widgets in a Qt 6 window, using SwiftQt. It also demonstrates
 various Qt widgets that are available with SwiftQt.
 
+Since I've begun adding a declarative UI capability, which is
+not based on Qt's QML but is more akin to SwiftUI in syntax,
+I've also added demo of that.
+
 ## Dependencies
 
 This app depends on:
@@ -36,11 +40,11 @@ but is now separate, so I am renumbering the releases:
 * 0.6 Updated for SwiftQt 0.30.
 * 0.7 Updated for SwiftQt 0.31.
 * 0.8 Updated for SwiftQt 0.32.
+* 0.9 Updated for SwiftQt 0.33, added DeclarativeWindow.
 
 ## Media
 
 * The included PDF is Apuleius' comedic novel Metamorphoses, also known as The Golden Ass.
-
 * The included TIFF image for the demo is from here:
   https://www.jpl.nasa.gov/images/pia25970-perseverance-rover-watches-ingenuity-mars-helicopters-54th-flight/
   "PIA25970 is a NASA image identifier for media showing 

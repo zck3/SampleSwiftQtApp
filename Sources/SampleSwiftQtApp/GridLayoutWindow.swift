@@ -134,21 +134,21 @@ class GridLayoutWindow : QMainWindow {
 		centralWidget = QWidget(self)
 		mainLayout = QGridLayout(centralWidget!)
 
-		label1 = QLabel (self, "This is a QLabel")
+		label1 = QLabel ("This is a QLabel", centralWidget!)
 		let font1 = QFont("Courier", 14, Qt.WeightLight, false)
 		label1!.setFont (font1)
 		label1!.setStyleSheet ("background-color : cyan; color : #008;");
 		label1!.setWordWrap (true)
 		label1!.setAlignment (Qt.AlignCenter + Qt.AlignVCenter)
 
-		label3 = QLabel (self, "This is a QLabel")
+		label3 = QLabel ("This is a QLabel", centralWidget!)
 		let font3 = QFont("Palatino", 17, Qt.WeightBold, true)
 		label3!.setFont (font3)
 		label3!.setStyleSheet ("background-color : purple; color : yellow;");
 		label3!.setWordWrap (true)
 		label3!.setAlignment (Qt.AlignCenter + Qt.AlignVCenter)
 
-		label4 = QLabel (self, "This is a QLabel")
+		label4 = QLabel ("This is a QLabel", centralWidget!)
 		var font4 = QFont("Georgia", 15, Qt.WeightNormal, true)
 		font4.setStrikeOut (true)
 		font4.setUnderline (true)
@@ -157,16 +157,15 @@ class GridLayoutWindow : QMainWindow {
 		label4!.setWordWrap (false)
 		label4!.setAlignment (Qt.AlignCenter + Qt.AlignVCenter)
 
-		label6 = QLabel (self, "This is a QLabel")
+		label6 = QLabel ("This is a QLabel", centralWidget!)
 		label6!.setStyleSheet ("background-color : yellow; color : red;");
 		label6!.setWordWrap (false)
 		label6!.setAlignment (Qt.AlignCenter + Qt.AlignVCenter)
 
-		slider = QSlider (self)
-		if let slider=slider {
+		slider = QSlider (centralWidget!)
+		if let slider = slider {
 			slider.setOrientation (Qt.Horizontal)
 			slider.setStyleSheet ("background-color : green; color : white;")
-			slider.setValue (20)
                         weak let weakSelf = self
 			slider.valueChangedSlot = { value in 
 				guard let slider = weakSelf?.slider,
@@ -180,7 +179,8 @@ class GridLayoutWindow : QMainWindow {
 		}
 
 		// Radio buttons are contained in a group box
-		groupBox = QGroupBox (self)
+		groupBox = QGroupBox ("Radio buttons", centralWidget!)
+		// This also works: groupBox = QGroupBox (centralWidget!)
 		groupBox?.setStyleSheet ("""
 			QGroupBox { 
 				border: 1px solid #ccc;
@@ -202,11 +202,8 @@ class GridLayoutWindow : QMainWindow {
 				/*padding: 13px;*/
 			} 
 		""")
-		groupBox?.setAlignment(Qt.AlignCenter)
-		//groupBox?.setMinimumSize(QSize(1, 120))
-		groupLayout = QHBoxLayout(groupBox!)
-
-		radioButton1 = QRadioButton (groupBox!, "Radio Button 1")
+		groupBox?.setAlignment(Qt.AlignRight)
+		radioButton1 = QRadioButton ("Radio Button 1", groupBox!)
 		radioButton1!.toggledSlot = { [weak self] in
 			guard let self = self else {
 				return 
@@ -214,7 +211,7 @@ class GridLayoutWindow : QMainWindow {
 			let value = self.radioButton1?.isChecked() ?? false
 			print ("radioButton1 was toggled, isChecked=\(value)")
 		}
-		radioButton2 = QRadioButton (groupBox!,"Radio Button 2")
+		radioButton2 = QRadioButton ("Radio Button 2", groupBox!)
 		radioButton2!.toggledSlot = { [weak self] in
 			guard let self = self else {
 				return 
@@ -222,10 +219,11 @@ class GridLayoutWindow : QMainWindow {
 			let value = self.radioButton2?.isChecked() ?? false
 			print ("radioButton2 was toggled, isChecked=\(value)")
 		}
+		groupLayout = QHBoxLayout(groupBox!)
 		groupLayout!.addWidget(radioButton1!)
 		groupLayout!.addWidget(radioButton2!)
 
-		checkbox = QCheckBox (groupBox!, "QCheckBox")
+		checkbox = QCheckBox ("QCheckBox", centralWidget!)
 		checkbox!.stateChangedSlot = { [weak self] in
 			guard let self = self else {
 				return 
@@ -243,16 +241,16 @@ class GridLayoutWindow : QMainWindow {
 			print ("The checkbox was toggled, checkstate=\(string)")
 		}
 		
-		lcdNumber = QLCDNumber(self, numberOfDigits: 7)
-		if let lcdNumber=lcdNumber {
+		lcdNumber = QLCDNumber(centralWidget!, numberOfDigits: 7)
+		if let lcdNumber = lcdNumber {
 			lcdNumber.setSmallDecimalPoint(true)
 			lcdNumber.display(3.14159)
 			lcdNumber.setStyleSheet ("background-color : black; color : green;")
 			lcdNumber.setMaximumHeight (19)
 		}
 
-		scrollArea = QScrollArea(self)
-		imageView = QLabel(scrollArea!, "")
+		scrollArea = QScrollArea(centralWidget!)
+		imageView = QLabel("", scrollArea!)
 		scrollArea?.setWidget(imageView!)
 
 		let image = QImage("PIA25970.tif")
@@ -288,7 +286,9 @@ class GridLayoutWindow : QMainWindow {
 
 		setCentralWidget(centralWidget!)
 
-		statusBar = QStatusBar (self, "This is the status bar.")
+		slider?.setValue (20)
+
+		statusBar = QStatusBar ("This is the status bar.", self)
 		setStatusBar (statusBar!)
 	
 		show()
@@ -303,7 +303,6 @@ class GridLayoutWindow : QMainWindow {
 		if eventType == QEventShow {
 			let className = String(describing: type(of:self))
 			print ("\(className) got QEventShow event.");
-			return true
 		}
 
 		let totalWindows = QApplication.totalMainWindows ()

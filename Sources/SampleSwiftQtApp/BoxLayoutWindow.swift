@@ -129,7 +129,7 @@ class BoxLayoutWindow : QMainWindow {
 	{
 		createMenus()
 	
-		statusBar = QStatusBar (self, "This is the status bar.")
+		statusBar = QStatusBar ("This is the status bar.", self)
 		setStatusBar (statusBar!)
 	
 		// Create box layouts and their contents
@@ -144,24 +144,24 @@ class BoxLayoutWindow : QMainWindow {
 		//verticalLayout!.setMaximumSize (QSize(200,999))
 		horizontalLayout!.addWidget (leftmostWidget!)
 
-		label1 = QLabel (self, "This is a QLabel")
+		label1 = QLabel ("This is a QLabel", self)
 		label1!.setStyleSheet ("background-color : cyan; color : #008;");
 		label1!.setWordWrap (true)
 		label1!.setAlignment (Qt.AlignCenter + Qt.AlignVCenter)
 
-		label2 = QLabel (self, "This is a QLabel")
+		label2 = QLabel ("This is a QLabel", self)
 		let font2 = QFont ("Palatino", 14, Qt.WeightDemiBold, true)
 		label2!.setFont (font2)
 		label2!.setStyleSheet ("background-color : blue; color : white;");
 		label2!.setWordWrap (true)
 		label2!.setAlignment (Qt.AlignCenter + Qt.AlignVCenter)
 
-		label3 = QLabel (self, "This is a QLabel")
+		label3 = QLabel ("This is a QLabel", self)
 		label3!.setStyleSheet ("background-color : purple; color : yellow;");
 		label3!.setWordWrap (true)
 		label3!.setAlignment (Qt.AlignCenter + Qt.AlignVCenter)
 
-		label4 = QLabel (self, "This is a QLabel")
+		label4 = QLabel ("This is a QLabel", self)
 		label4!.setStyleSheet ("background-color : orange; color : red;");
 		label4!.setWordWrap (false)
 		label4!.setAlignment (Qt.AlignCenter + Qt.AlignVCenter)

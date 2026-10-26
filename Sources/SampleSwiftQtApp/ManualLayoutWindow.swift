@@ -237,17 +237,17 @@ class ManualLayoutWindow : QMainWindow
 		}
 		tableScrollBar = table!.verticalScrollBar()
 
-		label1 = QLabel (self, "QLabel")
+		label1 = QLabel ("QLabel", self)
 		label1!.setStyleSheet ("background-color : cyan; color : #008;")
 		label1!.setWordWrap (true)
-		label1!.setAlignment (Qt.AlignCenter + Qt.AlignVCenter)
+		label1!.setFont (QFont("Georgia", 17, 0, true))
+		label1!.setAlignment (Qt.AlignCenter)
 
 		webEngineView = QWebEngineView (self)
 		webEngineView!.setHTML ("""
-
-<html><h1>This is a QWebEngineView.</h1> This is a QWebEngineView.  <p><i>This is a QWebEngineView.</i> <p><b>This is a QWebEngineView.</b><img src=https://apod.nasa.gov/apod/image/2310/WitchHead_Alharbi_3051.jpg >
+<html><h1>This is a QWebEngineView.</h1> This is a QWebEngineView.  <p><i>This is a QWebEngineView.</i> <p><b>This is a QWebEngineView.</b><p><img src="https://apod.nasa.gov/apod/image/2310/WitchHead_Alharbi_3051.jpg">
 """)
-		button1 = QPushButton (self, "Click to change\nweb URL")
+		button1 = QPushButton ("Click to change\nweb URL", self)
 		button1!.clickedSlot = { [weak self] in
 			guard let self = self else {
 				return 
@@ -273,7 +273,7 @@ class ManualLayoutWindow : QMainWindow
 		}
 		button1!.setStyleSheet ("background-color : white; color : #080;")
 
-		button2 = QPushButton (self, "Click to zoom in\nweb browser")
+		button2 = QPushButton ("Click to zoom in\nweb browser", self)
 		var font2 = QFont("Times", 13, 0, true)
 		font2.setUnderline(true)
 		button2!.setFont (font2)
@@ -296,7 +296,7 @@ class ManualLayoutWindow : QMainWindow
 			}
 		}
 
-		button3 = QPushButton (self, "Remove QTextEdit")
+		button3 = QPushButton ("Remove QTextEdit", self)
 		button3!.setDefault (true)
 		button3!.clickedSlot = { [weak self] in
 			guard let self = self else {
@@ -305,7 +305,6 @@ class ManualLayoutWindow : QMainWindow
 			let string = self.button3!.text()
 			print ("Button \"\(string)\" clicked.")
 
-			// Note, no layout is used so no need to removeWidget.
 			self.editor?.setParent(nil)
 			self.editor = nil
 
@@ -342,7 +341,7 @@ QTextEdit\nSed ut perspiciatis, unde omnis iste natus error sit voluptatem accus
 		let image = QImage("PIA25970.tif")
 		imageWidth = image.width()
 		imageHeight = image.height()
-		imageView = QLabel(scrollArea!, "")
+		imageView = QLabel("", scrollArea!)
 		imageView?.setImage(image)
 		imageView?.setFrame (QRect.new(0, 0, imageWidth, imageHeight))
 		scrollArea?.setWidget (imageView!)
@@ -359,9 +358,9 @@ QTextEdit\nSed ut perspiciatis, unde omnis iste natus error sit voluptatem accus
 		//let pixmap = QPixmap("PIA25970.tif")
 		//print ("QPixmap loaded, size is \(pixmap.width())x\(pixmap.height())")
 
-		setTitle("Sample App using SwiftQt \(SwiftQt.release)")
+		setTitle("Manual Layout Window for SwiftQt \(SwiftQt.release)")
 
-		statusBar = QStatusBar (self, "This is the status bar.")
+		statusBar = QStatusBar ("This is the status bar.", self)
 		setStatusBar (statusBar!)
 	
 		show()
